@@ -1,0 +1,1 @@
+Dado que se trata de un conjunto de datos conocido, los datos en crudo serán obtenidos de la función `load_iris` en scikit-learn (https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html).
