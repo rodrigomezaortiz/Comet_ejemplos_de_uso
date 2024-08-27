@@ -29,9 +29,10 @@ def preprocesado(df: pd.DataFrame) -> pd.DataFrame:
         col_list = list(schema.columns.keys())
 
         # El esquema es válido
-        scaled = preprocessing.StandardScaler().fit_transform(df[col_list])
+        scaler = preprocessing.StandardScaler()
+        scaled = scaler.fit_transform(df[col_list])
         df_scaled = pd.DataFrame(scaled, columns=col_list)
 
-        return pd.concat([df_scaled, df.drop(columns=col_list)], axis=1)
+        return pd.concat([df_scaled, df.drop(columns=col_list)], axis=1), scaler
     except pa.errors.SchemaError as exc:
         print(exc)
