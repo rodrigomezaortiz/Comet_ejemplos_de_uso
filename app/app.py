@@ -1,20 +1,30 @@
 import streamlit as st
+import joblib
 import pandas as pd
-from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
 
-# Load the Iris dataset
-iris = load_iris()
-X = pd.DataFrame(iris.data, columns=iris.feature_names)
-y = pd.Series(iris.target_names[iris.target], name='class')
+def predict(features):
+    """
+    Usa los modelos entrenados para predecir
 
-# Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    Args:
+        features (list): DataFrame de entrada con las columnas
+            del Iris dataset.
 
-# Train a Random Forest Classifier
-rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
-rf_classifier.fit(X_train, y_train)
+    Returns:
+        float: Predicción del modelo
+    """
+
+    # Scaled
+    df = pd.DataFrame(features, columns=['sepal_length','sepal_width','petal_length','petal_width'])
+    scaler = joblib.load("./model/scaler.joblib")
+    x = scaler.transform(df)
+
+    # Model
+    df = pd.DataFrame(x, columns=['sepal_length','sepal_width','petal_length','petal_width'])
+    model = joblib.load("./model/best_model.joblib")
+    return model.predict(df)
+
+clases = ["Setosa", "Versicolor", "Virginica"]
 
 # Streamlit app
 st.title('Iris Flower Classification')
@@ -30,17 +40,12 @@ petal_width = st.number_input('Petal Width (cm)', min_value=0.0, max_value=10.0,
 if st.button('Predict Iris Class'):
     # Make prediction
     features = [[sepal_length, sepal_width, petal_length, petal_width]]
-    prediction = rf_classifier.predict(features)
-    
+    prediction = predict(features)
+
     # Display result
     st.header('Prediction')
-
-    prediction = 50
-
-    if prediction < 60:
-        prediction = 60
-
-    st.write(f'The iris flower is predicted to be: **{prediction}**')
+    st.write()
+    st.write(f'The iris flower is predicted to be: **{clases[int(prediction)]}**')
 
 # Add some information about the dataset
 st.sidebar.header('About')
